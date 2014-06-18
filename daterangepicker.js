@@ -62,13 +62,13 @@
         //event listeners
 
         this.container.find('.calendar')
-            .on('click.daterangepicker', '.prev', $.proxy(this.clickPrev, this))
-            .on('click.daterangepicker', '.next', $.proxy(this.clickNext, this))
-            .on('click.daterangepicker', '.available a', $.proxy(this.clickDate, this))
-            .on('mouseenter.daterangepicker', '.available a', $.proxy(this.enterDate, this))
-            .on('mouseleave.daterangepicker', '.available a', $.proxy(this.updateFormInputs, this))
-            .on('focus.daterangepicker', '.available a', $.proxy(this.enterDate, this))
-            .on('focus.daterangepicker', '.available a', $.proxy(this.updateFormInputs, this))
+            .on('click.daterangepicker', '.prev a', $.proxy(this.clickPrev, this))
+            .on('click.daterangepicker', '.next a', $.proxy(this.clickNext, this))
+            .on('click.daterangepicker', 'td.available a', $.proxy(this.clickDate, this))
+            .on('mouseenter.daterangepicker', 'td.available a', $.proxy(this.enterDate, this))
+            .on('mouseleave.daterangepicker', 'td.available a', $.proxy(this.updateFormInputs, this))
+            .on('focus.daterangepicker', 'td.available a', $.proxy(this.enterDate, this))
+            .on('focus.daterangepicker', 'td.available a', $.proxy(this.updateFormInputs, this))
             .on('change.daterangepicker', 'select.yearselect', $.proxy(this.updateMonthYear, this))
             .on('change.daterangepicker', 'select.monthselect', $.proxy(this.updateMonthYear, this))
             .on('change.daterangepicker', 'select.hourselect,select.minuteselect,select.ampmselect', $.proxy(this.updateTime, this));
@@ -607,6 +607,7 @@
         },
 
         clickPrev: function (e) {
+            e.preventDefault();
             var cal = $(e.target).parents('.calendar');
             if (cal.hasClass('left')) {
                 this.leftCalendar.month.subtract('month', 1);
@@ -614,9 +615,14 @@
                 this.rightCalendar.month.subtract('month', 1);
             }
             this.updateCalendars();
+            setTimeout(
+                function() {
+                    cal.find('.prev-link').focus();
+                }, 100);
         },
 
         clickNext: function (e) {
+            e.preventDefault();
             var cal = $(e.target).parents('.calendar');
             if (cal.hasClass('left')) {
                 this.leftCalendar.month.add('month', 1);
@@ -624,6 +630,10 @@
                 this.rightCalendar.month.add('month', 1);
             }
             this.updateCalendars();
+            setTimeout(
+                function() {
+                    cal.find('.next-link').focus();
+                }, 100);
         },
 
         enterDate: function (e) {
@@ -881,7 +891,7 @@
                 html += '<th></th>';
 
             if (!minDate || minDate.isBefore(calendar[1][1])) {
-                html += '<th class="prev available"><i class="fa fa-arrow-left icon-arrow-left glyphicon glyphicon-arrow-left"></i></th>';
+                html += '<th class="prev available"><a class="prev-link" href=""><i class="fa fa-arrow-left icon-arrow-left glyphicon glyphicon-arrow-left"></i></a></th>';
             } else {
                 html += '<th></th>';
             }
@@ -894,7 +904,7 @@
 
             html += '<th colspan="5" class="month">' + dateHtml + '</th>';
             if (!maxDate || maxDate.isAfter(calendar[1][1])) {
-                html += '<th class="next available"><i class="fa fa-arrow-right icon-arrow-right glyphicon glyphicon-arrow-right"></i></th>';
+                html += '<th class="next available"><a class="next-link" href=""><i class="fa fa-arrow-right icon-arrow-right glyphicon glyphicon-arrow-right"></i></a></th>';
             } else {
                 html += '<th></th>';
             }
