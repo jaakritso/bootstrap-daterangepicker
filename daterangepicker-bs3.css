@@ -42,7 +42,7 @@
 }
 
 .daterangepicker.show-calendar .calendar {
-    display: block;
+  display: block;
 }
 
 .daterangepicker .calendar.single .calendar-date {
@@ -203,11 +203,11 @@
   white-space: nowrap;
 }
 
-.daterangepicker td .off {
+.daterangepicker td.off a {
   color: #999;
 }
 
-.daterangepicker td .disabled {
+.daterangepicker td.disabled a {
   color: #999;
 }
 
@@ -216,6 +216,7 @@
 }
 .daterangepicker td.available a {
   padding: 5px 3px;
+  color: #1a1a1a;
 }
 
 .daterangepicker td.in-range {
