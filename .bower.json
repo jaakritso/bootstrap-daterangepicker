@@ -1,7 +1,10 @@
 {
   "name": "bootstrap-daterangepicker",
   "version": "1.3.7",
-  "main": "daterangepicker.js",
+  "main": [
+    "daterangepicker.js",
+    "daterangepicker-bs3.css"
+  ],
   "ignore": [
     "**/.*",
     "node_modules",
@@ -15,14 +18,13 @@
     "jquery": ">=1.10",
     "momentjs": "~2.5.1"
   },
-  "homepage": "https://github.com/dangrossman/bootstrap-daterangepicker",
-  "_release": "1.3.7",
-  "_resolution": {
-    "type": "version",
-    "tag": "v1.3.7",
-    "commit": "7ddd3b68cac8ab1375ba931cb7fce0c72eee74dd"
+  "_cacheHeaders": {
+    "ETag": "\"6109c5fcd829ce1ceea3fd6b7afd122f7ca8aaf6\"",
+    "Content-Type": "application/zip",
+    "Content-Disposition": "attachment; filename=bootstrap-daterangepicker-master.zip"
   },
-  "_source": "git://github.com/dangrossman/bootstrap-daterangepicker.git",
+  "_release": "e-tag:6109c5fcd",
+  "_source": "https://github.com/jaakritso/bootstrap-daterangepicker/archive/master.zip",
   "_target": "*",
-  "_originalSource": "bootstrap-daterangepicker"
+  "_originalSource": "https://github.com/jaakritso/bootstrap-daterangepicker/archive/master.zip"
 }
