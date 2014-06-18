@@ -30,8 +30,8 @@
                       '<label for="daterangepicker_end"></label>' +
                       '<input class="input-mini" type="text" name="daterangepicker_end" value="" disabled="disabled" />' +
                     '</div>' +
-                    '<button class="applyBtn" disabled="disabled"></button>&nbsp;' +
-                    '<button class="cancelBtn"></button>' +
+                    '<button type="button" class="applyBtn" disabled="disabled"></button>&nbsp;' +
+                    '<button type="button" class="cancelBtn"></button>' +
                   '</div>' +
                 '</div>' +
               '</div>';
