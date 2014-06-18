@@ -64,9 +64,9 @@
         this.container.find('.calendar')
             .on('click.daterangepicker', '.prev', $.proxy(this.clickPrev, this))
             .on('click.daterangepicker', '.next', $.proxy(this.clickNext, this))
-            .on('click.daterangepicker', '.available', $.proxy(this.clickDate, this))
-            .on('mouseenter.daterangepicker', '.available', $.proxy(this.enterDate, this))
-            .on('mouseleave.daterangepicker', '.available', $.proxy(this.updateFormInputs, this))
+            .on('click.daterangepicker', '.available a', $.proxy(this.clickDate, this))
+            .on('mouseenter.daterangepicker', '.available a', $.proxy(this.enterDate, this))
+            .on('mouseleave.daterangepicker', '.available a', $.proxy(this.updateFormInputs, this))
             .on('change.daterangepicker', 'select.yearselect', $.proxy(this.updateMonthYear, this))
             .on('change.daterangepicker', 'select.monthselect', $.proxy(this.updateMonthYear, this))
             .on('change.daterangepicker', 'select.hourselect,select.minuteselect,select.ampmselect', $.proxy(this.updateTime, this));
@@ -92,6 +92,7 @@
         $(document).keyup(function(e) {
           if (e.keyCode == 27) { // esc
             $('.show-calendar').hide();
+            $('.show-calendar').closest('.form-group').next().find('input:first').focus();
           }
         });
         $('.show-calendar').on('keydown', function(e) {
@@ -630,7 +631,7 @@
 
         enterDate: function (e) {
 
-            var title = $(e.target).attr('data-title');
+            var title = $(e.target).parent().attr('data-title');
             var row = title.substr(1, 1);
             var col = title.substr(3, 1);
             var cal = $(e.target).parents('.calendar');
@@ -645,7 +646,7 @@
 
         clickDate: function (e) {
             e.preventDefault();
-            var title = $(e.target).attr('data-title');
+            var title = $(e.target).parent().attr('data-title');
             var row = title.substr(1, 1);
             var col = title.substr(3, 1);
             var cal = $(e.target).parents('.calendar');
@@ -703,7 +704,7 @@
                 this.clickApply();
             setTimeout(
                 function() {
-                    $('.available.active:last').focus()
+                    $('.available.active:last a').focus()
                 }, 100);
         },
 
@@ -944,7 +945,7 @@
                     }
 
                     var title = 'r' + row + 'c' + col;
-                    html += '<td>' + '<a class="' + cname.replace(/\s+/g, ' ').replace(/^\s?(.*?)\s?$/, '$1') + '" data-title="' + title + '" href="">' + calendar[row][col].date() + '</a>' + '</td>';
+                    html += '<td class="' + cname.replace(/\s+/g, ' ').replace(/^\s?(.*?)\s?$/, '$1') + '" data-title="' + title + '">' + '<a href="">' + calendar[row][col].date() + '</a>' + '</td>';
                 }
                 html += '</tr>';
             }
