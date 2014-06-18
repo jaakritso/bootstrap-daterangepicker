@@ -67,6 +67,8 @@
             .on('click.daterangepicker', '.available a', $.proxy(this.clickDate, this))
             .on('mouseenter.daterangepicker', '.available a', $.proxy(this.enterDate, this))
             .on('mouseleave.daterangepicker', '.available a', $.proxy(this.updateFormInputs, this))
+            .on('focus.daterangepicker', '.available a', $.proxy(this.enterDate, this))
+            .on('focus.daterangepicker', '.available a', $.proxy(this.updateFormInputs, this))
             .on('change.daterangepicker', 'select.yearselect', $.proxy(this.updateMonthYear, this))
             .on('change.daterangepicker', 'select.monthselect', $.proxy(this.updateMonthYear, this))
             .on('change.daterangepicker', 'select.hourselect,select.minuteselect,select.ampmselect', $.proxy(this.updateTime, this));
@@ -88,23 +90,6 @@
         } else {
             this.element.on('click.daterangepicker', $.proxy(this.toggle, this));
         }
-
-        $(document).keyup(function(e) {
-          if (e.keyCode == 27) { // esc
-            $('.show-calendar').hide();
-            $('.show-calendar').closest('.form-group').next().find('input:first').focus();
-          }
-        });
-        $('.show-calendar').on('keydown', function(e) {
-          var keyCode = e.keyCode || e.which;
-
-          if (keyCode == 9) { //tab
-            if($(document.activeElement).parents('.show-calendar').length<1) {
-                $('.show-calendar').hide();
-            }
-        }
-    });
-
     };
 
     DateRangePicker.prototype = {
@@ -516,12 +501,24 @@
             this.element.addClass('active');
             this.container.show();
             this.move();
-
             $(document).on('click.daterangepicker', $.proxy(this.outsideClick, this));
             // also explicitly play nice with Bootstrap dropdowns, which stopPropagation when clicking them
             $(document).on('click.daterangepicker', '[data-toggle=dropdown]', $.proxy(this.outsideClick, this));
-
             this.element.trigger('show.daterangepicker', this);
+            //get lastElement for closing calendar after navigating off from it
+            var lastElement = $(e.target.nextSibling).find(':last');
+            $(e.target.nextSibling).on('keydown', function(key) {
+                var keyCode = key.keyCode || key.which;
+                if (keyCode == 9) { //tab
+                    if($(document.activeElement)[0] === lastElement[0]) {
+                        $(e.target).next('.show-calendar').hide();
+                    }
+                }
+                if (keyCode == 27) { //esc
+                    $(e.target).next('.show-calendar').hide();
+                    $(e.target).closest('.form-group').next().find('input:first').focus();
+                }
+            });
         },
 
         outsideClick: function (e) {
