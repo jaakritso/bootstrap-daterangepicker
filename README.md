@@ -1,5 +1,12 @@
-# Date Range Picker for Bootstrap
+# Keyboard accessible Date Range Picker for Bootstrap
 
+
+### New features
+* Keyboard accessibility - navigate with tab
+* Close calendar with ESC key
+* Close calendar when navigating off
+----
+# Date Range Picker for Bootstrap
 ![Improvely.com](http://i.imgur.com/LbAMf3D.png)
 
 This date range picker component for Bootstrap creates a dropdown menu from which a user can
