@@ -202,6 +202,9 @@
   cursor: pointer;
   white-space: nowrap;
 }
+.daterangepicker th a {
+  color: #1a1a1a;
+}
 
 .daterangepicker td.off a {
   color: #999;
