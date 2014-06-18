@@ -1,5 +1,5 @@
 /**
-* @version: 1.3.7
+* @version: 1.3.6
 * @author: Dan Grossman http://www.dangrossman.info/
 * @date: 2014-04-29
 * @copyright: Copyright (c) 2012-2014 Dan Grossman. All rights reserved.
@@ -40,8 +40,8 @@
         if (typeof options !== 'object' || options === null)
             options = {};
 
-        this.parentEl = (typeof options === 'object' && options.parentEl && $(options.parentEl).length) ? $(options.parentEl) : $(this.parentEl);
-        this.container = $(DRPTemplate).appendTo(this.parentEl);
+        this.parentEl = (typeof options === 'object' && options.parentEl && $(options.parentEl).length) || $(this.parentEl);
+        this.container = $(DRPTemplate).insertAfter(this.element);
 
         this.setOptions(options, cb);
 
@@ -64,9 +64,9 @@
         this.container.find('.calendar')
             .on('click.daterangepicker', '.prev', $.proxy(this.clickPrev, this))
             .on('click.daterangepicker', '.next', $.proxy(this.clickNext, this))
-            .on('click.daterangepicker', 'td.available', $.proxy(this.clickDate, this))
-            .on('mouseenter.daterangepicker', 'td.available', $.proxy(this.enterDate, this))
-            .on('mouseleave.daterangepicker', 'td.available', $.proxy(this.updateFormInputs, this))
+            .on('click.daterangepicker', '.available', $.proxy(this.clickDate, this))
+            .on('mouseenter.daterangepicker', '.available', $.proxy(this.enterDate, this))
+            .on('mouseleave.daterangepicker', '.available', $.proxy(this.updateFormInputs, this))
             .on('change.daterangepicker', 'select.yearselect', $.proxy(this.updateMonthYear, this))
             .on('change.daterangepicker', 'select.monthselect', $.proxy(this.updateMonthYear, this))
             .on('change.daterangepicker', 'select.hourselect,select.minuteselect,select.ampmselect', $.proxy(this.updateTime, this));
@@ -88,6 +88,21 @@
         } else {
             this.element.on('click.daterangepicker', $.proxy(this.toggle, this));
         }
+
+        $(document).keyup(function(e) {
+          if (e.keyCode == 27) { // esc
+            $('.show-calendar').hide();
+          }
+        });
+        $('.show-calendar').on('keydown', function(e) {
+          var keyCode = e.keyCode || e.which;
+
+          if (keyCode == 9) { //tab
+            if($(document.activeElement).parents('.show-calendar').length<1) {
+                $('.show-calendar').hide();
+            }
+        }
+    });
 
     };
 
@@ -353,8 +368,8 @@
                 //swap calendar positions
                 var left = this.container.find('.calendar.left');
                 var right = this.container.find('.calendar.right');
-                left.removeClass('left').addClass('right');
-                right.removeClass('right').addClass('left');
+                /*left.removeClass('left').addClass('right');
+                right.removeClass('right').addClass('left');*/
             }
 
             if (typeof options.ranges === 'undefined' && !this.singleDatePicker) {
@@ -424,7 +439,7 @@
             var dateString = this.element.val().split(this.separator),
                 start = null,
                 end = null;
-            
+
             if(dateString.length === 2) {
                 start = moment(dateString[0], this.format);
                 end = moment(dateString[1], this.format);
@@ -434,7 +449,7 @@
                 start = moment(this.element.val(), this.format);
                 end = start;
             }
-            
+
             if (end.isBefore(start)) return;
 
             this.oldStartDate = this.startDate.clone();
@@ -458,15 +473,13 @@
             var parentOffset = { top: 0, left: 0 };
             if (!this.parentEl.is('body')) {
                 parentOffset = {
-                    top: this.parentEl.offset().top - this.parentEl.scrollTop(),
-                    left: this.parentEl.offset().left - this.parentEl.scrollLeft()
                 };
             }
 
             if (this.opens == 'left') {
                 this.container.css({
-                    top: this.element.offset().top + this.element.outerHeight() - parentOffset.top,
-                    right: $(window).width() - this.element.offset().left - this.element.outerWidth() - parentOffset.left,
+                    /*top: this.element.offset().top + this.element.outerHeight() - parentOffset.top,
+                    right: $(window).width() - this.element.offset().left - this.element.outerWidth() - parentOffset.left,*/
                     left: 'auto'
                 });
                 if (this.container.offset().left < 0) {
@@ -477,8 +490,8 @@
                 }
             } else {
                 this.container.css({
-                    top: this.element.offset().top + this.element.outerHeight() - parentOffset.top,
-                    left: this.element.offset().left - parentOffset.left,
+                    /*top: this.element.offset().top + this.element.outerHeight() - parentOffset.top,
+                    left: this.element.offset().left - parentOffset.left,*/
                     right: 'auto'
                 });
                 if (this.container.offset().left + this.container.outerWidth() > $(window).width()) {
@@ -503,15 +516,9 @@
             this.container.show();
             this.move();
 
-            // Create a click proxy that is private to this instance of datepicker, for unbinding
-            this._outsideClickProxy = $.proxy(function (e) { this.outsideClick(e); }, this);
-            // Bind global datepicker mousedown for hiding and
-            $(document)
-              .on('mousedown.daterangepicker', this._outsideClickProxy)
-              // also explicitly play nice with Bootstrap dropdowns, which stopPropagation when clicking them
-              .on('click.daterangepicker', '[data-toggle=dropdown]', this._outsideClickProxy)
-              // and also close when focus changes to outside the picker (eg. tabbing between controls)
-              .on('focusin.daterangepicker', this._outsideClickProxy);
+            $(document).on('click.daterangepicker', $.proxy(this.outsideClick, this));
+            // also explicitly play nice with Bootstrap dropdowns, which stopPropagation when clicking them
+            $(document).on('click.daterangepicker', '[data-toggle=dropdown]', $.proxy(this.outsideClick, this));
 
             this.element.trigger('show.daterangepicker', this);
         },
@@ -529,10 +536,7 @@
         },
 
         hide: function (e) {
-            $(document)
-              .off('mousedown.daterangepicker', this._outsideClickProxy)
-              .off('click.daterangepicker', this._outsideClickProxy)
-              .off('focusin.daterangepicker', this._outsideClickProxy);
+            $(document).off('click.daterangepicker', this.outsideClick);
 
             this.element.removeClass('active');
             this.container.hide();
@@ -561,6 +565,7 @@
         showCalendars: function() {
             this.container.addClass('show-calendar');
             this.move();
+
         },
 
         hideCalendars: function() {
@@ -639,6 +644,7 @@
         },
 
         clickDate: function (e) {
+            e.preventDefault();
             var title = $(e.target).attr('data-title');
             var row = title.substr(1, 1);
             var col = title.substr(3, 1);
@@ -695,6 +701,10 @@
 
             if (this.singleDatePicker)
                 this.clickApply();
+            setTimeout(
+                function() {
+                    $('.available.active:last').focus()
+                }, 100);
         },
 
         clickApply: function (e) {
@@ -727,9 +737,9 @@
         },
 
         updateTime: function(e) {
-
-            var cal = $(e.target).closest('.calendar'),
-                isLeft = cal.hasClass('left');
+            var isLeft = $(e.target).closest('.calendar').hasClass('left'),
+                leftOrRight = isLeft ? 'left' : 'right',
+                cal = this.container.find('.calendar.'+leftOrRight);
 
             var hour = parseInt(cal.find('.hourselect').val(), 10);
             var minute = parseInt(cal.find('.minuteselect').val(), 10);
@@ -917,7 +927,7 @@
                     var cname = 'available ';
                     cname += (calendar[row][col].month() == calendar[1][1].month()) ? '' : 'off';
 
-                    if ((minDate && calendar[row][col].isBefore(minDate, 'day')) || (maxDate && calendar[row][col].isAfter(maxDate, 'day'))) {
+                    if ((minDate && calendar[row][col].isBefore(minDate)) || (maxDate && calendar[row][col].isAfter(maxDate))) {
                         cname = ' off disabled ';
                     } else if (calendar[row][col].format('YYYY-MM-DD') == selected.format('YYYY-MM-DD')) {
                         cname += ' active ';
@@ -934,7 +944,7 @@
                     }
 
                     var title = 'r' + row + 'c' + col;
-                    html += '<td class="' + cname.replace(/\s+/g, ' ').replace(/^\s?(.*?)\s?$/, '$1') + '" data-title="' + title + '">' + calendar[row][col].date() + '</td>';
+                    html += '<td>' + '<a class="' + cname.replace(/\s+/g, ' ').replace(/^\s?(.*?)\s?$/, '$1') + '" data-title="' + title + '" href="">' + calendar[row][col].date() + '</a>' + '</td>';
                 }
                 html += '</tr>';
             }
@@ -1004,7 +1014,6 @@
         },
 
         remove: function() {
-
             this.container.remove();
             this.element.off('.daterangepicker');
             this.element.removeData('daterangepicker');
